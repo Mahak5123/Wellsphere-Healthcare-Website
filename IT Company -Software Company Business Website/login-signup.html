@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login / Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      width: 350px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    .toggle-link {
+      text-align: center;
+      margin-top: 15px;
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .toggle-link:hover {
+      color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 id="form-title">Login</h2>
+
+  <form id="login-form">
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="login-email" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="login-password" required>
+    </div>
+    <button type="submit" class="btn">Login</button>
+    <div class="toggle-link" onclick="toggleForm()">Don't have an account? Sign up</div>
+  </form>
+
+  <form id="signup-form" style="display: none;">
+    <div class="input-group">
+      <label>Username</label>
+      <input type="text" id="signup-username" required>
+    </div>
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="signup-email" required>
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" required>
+    </div>
+    <button type="submit" class="btn">Sign Up</button>
+    <div class="toggle-link" onclick="toggleForm()">Already have an account? Login</div>
+  </form>
+</div>
+
+<script>
+  function toggleForm() {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const title = document.getElementById('form-title');
+
+    if (loginForm.style.display === "none") {
+      loginForm.style.display = "block";
+      signupForm.style.display = "none";
+      title.innerText = "Login";
+    } else {
+      loginForm.style.display = "none";
+      signupForm.style.display = "block";
+      title.innerText = "Sign Up";
+    }
+  }
+
+  // Real login request
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+      const res = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+  alert(data.message);
+  localStorage.setItem("isLoggedIn", "true"); // ✅ Store login state
+  window.location.href = 'index.html';
+}
+ else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Something went wrong during login.');
+    }
+  });
+
+  // Real signup request
+  document.getElementById('signup-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('signup-username').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    try {
+      const res = await fetch('http://localhost:3000/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        toggleForm(); // Switch to login
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert('Something went wrong during signup.');
+    }
+  });
+</script>
+
+</body>
+</html>
